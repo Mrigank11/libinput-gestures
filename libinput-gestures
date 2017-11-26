@@ -44,6 +44,8 @@ opt.add_argument('--device',
 # Test/diag hidden option to specify a file containing libinput list
 # device output to parse
 opt.add_argument('--device-list', help=argparse.SUPPRESS)
+opt.add_argument('--max_events', type=int, 
+        help='maximum number of events to check before executing command')
 args = opt.parse_args()
 
 if args.debug or args.raw or args.list:
@@ -377,6 +379,16 @@ def add_conf_command(func):
     conf_commands[re.sub('^conf_', '', func.__name__)] = func
 
 @add_conf_command
+def conf_max_events(lineargs):
+    'Process a single device line in conf file'
+    # Command line overrides configuration file
+    if not args.max_events:
+        args.max_events = int(lineargs)
+        print("Max Events set from Config : {}".format(args.max_events))
+
+    return None if args.max_events else 'No max_events specified'
+
+@add_conf_command
 def conf_gesture(lineargs):
     'Process a single gesture line in conf file'
     fields = lineargs.split(maxsplit=2)
@@ -545,6 +557,7 @@ cmd = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE,
 
 # Sit in a loop forever reading the libinput messages ..
 handler = None
+updates = 0
 for line in cmd.stdout:
 
     # Just output raw messages if in that mode
@@ -569,7 +582,6 @@ for line in cmd.stdout:
             if not handler.update(re.split(r'[^-.\d]+', params)):
                 print('Could not parse {} {}: {}'.format(gesture, event,
                     params), file=sys.stderr)
-
     elif event == 'BEGIN':
         handler = handlers.get(gesture)
         if handler:
