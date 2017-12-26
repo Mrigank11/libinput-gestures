@@ -163,7 +163,17 @@ class COMMAND:
 
     def run(self):
         'Run this command + arguments'
-        run(self.argslist)
+        if '&&' in self.argslist:
+            cmd=[]
+            for arg in self.argslist:
+                if arg!="&&":
+                    cmd.append(arg)
+                else:
+                    run(cmd)
+                    cmd=[]
+            run(cmd)
+        else:
+            run(self.argslist)
 
     def __str__(self):
         'Create string representation'
@@ -579,9 +589,15 @@ for line in cmd.stdout:
     if event == 'UPDATE':
         if handler:
             # Split parameters into list of clean numbers
-            if not handler.update(re.split(r'[^-.\d]+', params)):
-                print('Could not parse {} {}: {}'.format(gesture, event,
-                    params), file=sys.stderr)
+            if not args.max_events or (args.max_events and updates < args.max_events):
+                handler.update(re.split(r'[^-.\d]+', params))
+                updates = updates+1
+            else:
+                #Enough updates! Time for action!!
+                updates = 0
+                if params != 'cancelled':
+                    handler.end()
+                handler = None
     elif event == 'BEGIN':
         handler = handlers.get(gesture)
         if handler:
@@ -591,6 +607,7 @@ for line in cmd.stdout:
                     file=sys.stderr)
     elif event == 'END':
         # Ignore gesture if final action is cancelled
+        updates = 0
         if handler:
             if params != 'cancelled':
                 handler.end()
