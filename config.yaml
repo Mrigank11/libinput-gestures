@@ -1,0 +1,35 @@
+max_events: 5
+gestures:
+  swipe: 
+    3:
+      left: 
+        command: 'xdotool key alt+Left'
+      left_up:
+        command: 'xdotool key Ctrl+Shift+Tab'
+      left_down:
+        command: 'xdotool key Ctrl+w'
+      right_up: 
+        command: 'xdotool key Ctrl+Tab '
+      right_down:
+        command: 'xdotool key Ctrl+T'
+      down:
+        command: '/home/mrigank/.scripts/volume down'
+        events: 10
+        repeat: true
+      up:
+        command: '/home/mrigank/.scripts/volume up'
+        events: 10
+        repeat: true
+    4:
+      up:
+        command: 'xdotool key Super+f '
+      down:
+        command: 'xdotool key Super+Q'
+      right:
+        command: 'xdotool key Super+Ctrl+Right'
+      left:
+        command: 'xdotool key Super+Ctrl+Left'
+      left_up:
+        command: 'xdotool key Super+Shift+Tab'
+      right_up:
+        command: 'xdotool key Super+Tab'
