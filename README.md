@@ -33,6 +33,11 @@ to read the touchpad device:
 
     sudo gpasswd -a $USER input
 
+Executing the above command will allow any process to record keystrokes.
+Instead, you can add this to sudoers:
+
+    %wheel ALL=(ALL:input) NOPASSWD: /usr/bin/libinput-gestures
+
 After executing the above command, **log out of your session
 completely**, and then log back in to assign this group (or just
 reboot).
